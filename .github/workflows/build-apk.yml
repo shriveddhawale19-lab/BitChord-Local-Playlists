@@ -32,7 +32,7 @@ jobs:
   
 
       - name: Install Android SDK
-        run: sdkmanager "platforms;android-37" "cmake;3.22.1"
+        run: sdkmanager "platforms;android-36" "cmake;3.22.1"
 
       - name: Build APK
         working-directory: BitChord-main
