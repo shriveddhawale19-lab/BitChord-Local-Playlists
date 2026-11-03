@@ -1,0 +1,32 @@
+name: Build BitChord Local Playlists APK
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reassemble source archive
+        run: cat BitChord-source.part0 BitChord-source.part1 BitChord-source.part2 > source.zip
+      - name: Extract source
+        run: unzip -q source.zip
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Install Android SDK components
+        run: sdkmanager "platforms;android-37" "cmake;3.22.1"
+      - name: Build APK
+        working-directory: BitChord-main
+        run: |
+          chmod +x ./gradlew
+          ./gradlew :app:assembleDevDebug --stacktrace
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BitChord-local-playlists-debug-apk
+          path: BitChord-main/app/build/outputs/apk/dev/debug/*.apk
+          if-no-files-found: error
+          retention-days: 7
